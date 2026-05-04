@@ -1,19 +1,27 @@
 pipeline {
     agent any
-    parameters{
-        choice (name: 'Version', choices: ['1.0','1.1','1.2'], description: 'Select Versions')
-        booleanParam (name: 'ExecuteTests', defaultValue: true, description: '')
+    tools{
+        nodejs 'Node'
     }
     stages{
 
-        stage("Build"){
+        stage("Build Application"){
             steps{
-                echo "Building Application"
+                script{
+                    echo "Building the Application"
+                    sh 'npm install'
+                }
             }
         }
-        stage("Test"){
+        stage("Building Image"){
             steps{
-                echo "Testing Application"
+                script{
+                    echo "Building the image of the application"
+                    withCredentials([usernamePassword(credentialsId: 'DockerHub-credentials', usernameVariable: 'USER', passwordVariable: 'PASS' )])
+                    sh 'docker build -t dharmakhadka/dockerinjenkins:1.1 .'
+                    sh 'docker login -u $USER -p $PASS'
+                    sh 'docker push dharmakhadka/dockerinjenkins:1.1'
+                }
             }
         }
         stage("Deploy"){
