@@ -9,7 +9,7 @@ pipeline {
             steps{
                 script{
                     echo "Building the Application"
-                    sh 'npm install'
+                    sh 'cd frontend && npm install'
                 }
             }
         }
